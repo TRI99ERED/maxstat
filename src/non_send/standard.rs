@@ -5,7 +5,7 @@ use std::{
 
 use crate::{
     modifier::{
-        standard::{Additive, MidFlat, Multiplicative, PostFlat, PreFlat},
+        standard::{Additive, Flat, Multiplicative, PostAdditive, PostMultiplicative},
         Modifier,
     },
     stat::{Stat5, StatMarker},
@@ -13,30 +13,28 @@ use crate::{
 
 pub struct StandardStatNSBase<
     Marker,
-    PreFlat,
+    Flat,
     Additive,
-    MidFlat,
+    PostAdditive,
     Multiplicative,
-    PostFlat,
+    PostMultiplicative,
     const N: usize = 2,
->(pub RefCell<Stat5<Marker, PreFlat, Additive, MidFlat, Multiplicative, PostFlat, N>>)
+>(pub RefCell<Stat5<Marker, Flat, Additive, PostAdditive, Multiplicative, PostMultiplicative, N>>)
 where
     Marker: StatMarker,
-    PreFlat: Modifier,
+    Flat: Modifier,
     Additive: Modifier,
-    MidFlat: Modifier,
+    PostAdditive: Modifier,
     Multiplicative: Modifier,
-    PostFlat: Modifier,
-    <Marker as StatMarker>::Raw: Add<
-        <<PreFlat as Modifier>::Target as StatMarker>::Raw,
-        Output = <Marker as StatMarker>::Raw,
-    >,
+    PostMultiplicative: Modifier,
+    <Marker as StatMarker>::Raw:
+        Add<<<Flat as Modifier>::Target as StatMarker>::Raw, Output = <Marker as StatMarker>::Raw>,
     <Marker as StatMarker>::Raw: Mul<
         <<Additive as Modifier>::Target as StatMarker>::Raw,
         Output = <Marker as StatMarker>::Raw,
     >,
     <Marker as StatMarker>::Raw: Add<
-        <<MidFlat as Modifier>::Target as StatMarker>::Raw,
+        <<PostAdditive as Modifier>::Target as StatMarker>::Raw,
         Output = <Marker as StatMarker>::Raw,
     >,
     <Marker as StatMarker>::Raw: Mul<
@@ -44,29 +42,27 @@ where
         Output = <Marker as StatMarker>::Raw,
     >,
     <Marker as StatMarker>::Raw: Add<
-        <<PostFlat as Modifier>::Target as StatMarker>::Raw,
+        <<PostMultiplicative as Modifier>::Target as StatMarker>::Raw,
         Output = <Marker as StatMarker>::Raw,
     >;
 
-impl<Marker, PreFlat, Additive, MidFlat, Multiplicative, PostFlat, const N: usize>
-    StandardStatNSBase<Marker, PreFlat, Additive, MidFlat, Multiplicative, PostFlat, N>
+impl<Marker, Flat, Additive, PostAdditive, Multiplicative, PostMultiplicative, const N: usize>
+    StandardStatNSBase<Marker, Flat, Additive, PostAdditive, Multiplicative, PostMultiplicative, N>
 where
     Marker: StatMarker,
-    PreFlat: Modifier,
+    Flat: Modifier,
     Additive: Modifier,
-    MidFlat: Modifier,
+    PostAdditive: Modifier,
     Multiplicative: Modifier,
-    PostFlat: Modifier,
-    <Marker as StatMarker>::Raw: Add<
-        <<PreFlat as Modifier>::Target as StatMarker>::Raw,
-        Output = <Marker as StatMarker>::Raw,
-    >,
+    PostMultiplicative: Modifier,
+    <Marker as StatMarker>::Raw:
+        Add<<<Flat as Modifier>::Target as StatMarker>::Raw, Output = <Marker as StatMarker>::Raw>,
     <Marker as StatMarker>::Raw: Mul<
         <<Additive as Modifier>::Target as StatMarker>::Raw,
         Output = <Marker as StatMarker>::Raw,
     >,
     <Marker as StatMarker>::Raw: Add<
-        <<MidFlat as Modifier>::Target as StatMarker>::Raw,
+        <<PostAdditive as Modifier>::Target as StatMarker>::Raw,
         Output = <Marker as StatMarker>::Raw,
     >,
     <Marker as StatMarker>::Raw: Mul<
@@ -74,7 +70,7 @@ where
         Output = <Marker as StatMarker>::Raw,
     >,
     <Marker as StatMarker>::Raw: Add<
-        <<PostFlat as Modifier>::Target as StatMarker>::Raw,
+        <<PostMultiplicative as Modifier>::Target as StatMarker>::Raw,
         Output = <Marker as StatMarker>::Raw,
     >,
 {
@@ -82,14 +78,14 @@ where
         Self(RefCell::new(Stat5::new(
             base,
             Box::new(|b, m1, m2, m3, m4, m5| {
-                ((b + PreFlat::combine(m1)) * Additive::combine(m2) + MidFlat::combine(m3))
+                ((b + Flat::combine(m1)) * Additive::combine(m2) + PostAdditive::combine(m3))
                     * Multiplicative::combine(m4)
-                    + PostFlat::combine(m5)
+                    + PostMultiplicative::combine(m5)
             }),
         )))
     }
 
-    pub fn apply_pre_flat(&self, value: PreFlat) {
+    pub fn apply_flat(&self, value: Flat) {
         self.0.borrow_mut().apply_m1(value);
     }
 
@@ -97,7 +93,7 @@ where
         self.0.borrow_mut().apply_m2(value);
     }
 
-    pub fn apply_mid_flat(&self, value: MidFlat) {
+    pub fn apply_post_add(&self, value: PostAdditive) {
         self.0.borrow_mut().apply_m3(value);
     }
 
@@ -105,31 +101,31 @@ where
         self.0.borrow_mut().apply_m4(value);
     }
 
-    pub fn apply_post_flat(&self, value: PostFlat) {
+    pub fn apply_post_mul(&self, value: PostMultiplicative) {
         self.0.borrow_mut().apply_m5(value);
     }
 
-    pub fn remove_pre_flat(&mut self, value: PreFlat) {
+    pub fn remove_flat(&self, value: Flat) {
         self.0.borrow_mut().remove_m1(value);
     }
 
-    pub fn remove_additive(&mut self, value: Additive) {
+    pub fn remove_additive(&self, value: Additive) {
         self.0.borrow_mut().remove_m2(value);
     }
 
-    pub fn remove_mid_flat(&mut self, value: MidFlat) {
+    pub fn remove_post_add(&self, value: PostAdditive) {
         self.0.borrow_mut().remove_m3(value);
     }
 
-    pub fn remove_multiplicative(&mut self, value: Multiplicative) {
+    pub fn remove_multiplicative(&self, value: Multiplicative) {
         self.0.borrow_mut().remove_m4(value);
     }
 
-    pub fn remove_post_flat(&mut self, value: PostFlat) {
+    pub fn remove_post_mul(&self, value: PostMultiplicative) {
         self.0.borrow_mut().remove_m5(value);
     }
 
-    pub fn has_pre_flat(&self, value: PreFlat) -> bool {
+    pub fn has_flat(&self, value: Flat) -> bool {
         self.0.borrow().has_m1(value)
     }
 
@@ -137,7 +133,7 @@ where
         self.0.borrow().has_m2(value)
     }
 
-    pub fn has_mid_flat(&self, value: MidFlat) -> bool {
+    pub fn has_post_add(&self, value: PostAdditive) -> bool {
         self.0.borrow().has_m3(value)
     }
 
@@ -145,8 +141,43 @@ where
         self.0.borrow().has_m4(value)
     }
 
-    pub fn has_post_flat(&self, value: PostFlat) -> bool {
+    pub fn has_post_mul(&self, value: PostMultiplicative) -> bool {
         self.0.borrow().has_m5(value)
+    }
+    
+    pub fn for_each_flat<F>(&self, f: F)
+    where
+        F: FnMut(&Flat),
+    {
+        self.0.borrow().m1().iter().for_each(f);
+    }
+    
+    pub fn for_each_additive<F>(&self, f: F)
+    where
+        F: FnMut(&Additive),
+    {
+        self.0.borrow().m2().iter().for_each(f);
+    }
+    
+    pub fn for_each_post_add<F>(&self, f: F)
+    where
+        F: FnMut(&PostAdditive),
+    {
+        self.0.borrow().m3().iter().for_each(f);
+    }
+    
+    pub fn for_each_multiplicative<F>(&self, f: F)
+    where
+        F: FnMut(&Multiplicative),
+    {
+        self.0.borrow().m4().iter().for_each(f);
+    }
+    
+    pub fn for_each_post_mul<F>(&self, f: F)
+    where
+        F: FnMut(&PostMultiplicative),
+    {
+        self.0.borrow().m5().iter().for_each(f);
     }
 
     pub fn base(&self) -> Marker::Raw {
@@ -158,13 +189,13 @@ where
     }
 }
 
-pub type StandardStatNS<Marker> = StandardStatNSBase<
+pub type StandardStatNS<Marker, Metadata> = StandardStatNSBase<
     Marker,
-    PreFlat<Marker, <Marker as StatMarker>::Raw>,
-    Additive<Marker, <Marker as StatMarker>::Raw>,
-    MidFlat<Marker, <Marker as StatMarker>::Raw>,
-    Multiplicative<Marker, <Marker as StatMarker>::Raw>,
-    PostFlat<Marker, <Marker as StatMarker>::Raw>,
+    Flat<Marker, <Marker as StatMarker>::Raw, Metadata>,
+    Additive<Marker, <Marker as StatMarker>::Raw, Metadata>,
+    PostAdditive<Marker, <Marker as StatMarker>::Raw, Metadata>,
+    Multiplicative<Marker, <Marker as StatMarker>::Raw, Metadata>,
+    PostMultiplicative<Marker, <Marker as StatMarker>::Raw, Metadata>,
 >;
 
 #[cfg(test)]
@@ -180,19 +211,75 @@ mod tests {
             type Raw = f32;
         }
 
-        let stat = StandardStatNS::<DummyMarker>::new(0.);
+        #[derive(PartialEq, Clone, Copy, Debug)]
+        enum DummyEnum {
+            First,
+            Second,
+            Third,
+            Fourth,
+            Fifth,
+            Sixth,
+            Seventh,
+            Eighth,
+            Ninth,
+            Tenth,
+        }
 
-        stat.apply_pre_flat(PreFlat::from_raw(1.));
-        stat.apply_pre_flat(PreFlat::from_raw(1.));
-        stat.apply_additive(Additive::from_raw(1.));
-        stat.apply_additive(Additive::from_raw(1.));
-        stat.apply_mid_flat(MidFlat::from_raw(1.));
-        stat.apply_mid_flat(MidFlat::from_raw(1.));
-        stat.apply_multiplicative(Multiplicative::from_raw(1.));
-        stat.apply_multiplicative(Multiplicative::from_raw(1.));
-        stat.apply_post_flat(PostFlat::from_raw(1.));
-        stat.apply_post_flat(PostFlat::from_raw(1.));
+        let stat = StandardStatNS::<DummyMarker, DummyEnum>::new(0.);
+
+        stat.apply_flat(
+            Flat::from_raw(1.)
+                .set_metadata(Some(DummyEnum::First))
+                .build(),
+        );
+        stat.apply_flat(
+            Flat::from_raw(1.)
+                .set_metadata(Some(DummyEnum::Second))
+                .build(),
+        );
+        stat.apply_additive(
+            Additive::from_raw(1.)
+                .set_metadata(Some(DummyEnum::Third))
+                .build(),
+        );
+        stat.apply_additive(
+            Additive::from_raw(1.)
+                .set_metadata(Some(DummyEnum::Fourth))
+                .build(),
+        );
+        stat.apply_post_add(
+            PostAdditive::from_raw(1.)
+                .set_metadata(Some(DummyEnum::Fifth))
+                .build(),
+        );
+        stat.apply_post_add(
+            PostAdditive::from_raw(1.)
+                .set_metadata(Some(DummyEnum::Sixth))
+                .build(),
+        );
+        stat.apply_multiplicative(
+            Multiplicative::from_raw(1.)
+                .set_metadata(Some(DummyEnum::Seventh))
+                .build(),
+        );
+        stat.apply_multiplicative(
+            Multiplicative::from_raw(1.)
+                .set_metadata(Some(DummyEnum::Eighth))
+                .build(),
+        );
+        stat.apply_post_mul(
+            PostMultiplicative::from_raw(1.)
+                .set_metadata(Some(DummyEnum::Ninth))
+                .build(),
+        );
+        stat.apply_post_mul(
+            PostMultiplicative::from_raw(1.)
+                .set_metadata(Some(DummyEnum::Tenth))
+                .build(),
+        );
 
         assert_eq!(10., stat.get());
+
+        stat.for_each_flat(|f| println!("{:?}: +{}", f.metadata().unwrap(), f.raw()));
     }
 }
