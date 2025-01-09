@@ -99,9 +99,7 @@ where
     }
 }
 
-pub struct Stat3S<Marker, M1, M2, M3, const N: usize = 2>(
-    pub Mutex<Stat3<Marker, M1, M2, M3, N>>,
-)
+pub struct Stat3S<Marker, M1, M2, M3, const N: usize = 2>(pub Mutex<Stat3<Marker, M1, M2, M3, N>>)
 where
     Marker: StatMarker,
     M1: Modifier,

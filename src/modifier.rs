@@ -2,7 +2,7 @@ use crate::stat::StatMarker;
 
 pub mod standard;
 
-pub trait Modifier: Sized  + PartialEq + Clone + Copy {
+pub trait Modifier: Sized + PartialEq + Clone + Copy {
     type Target: StatMarker;
 
     fn from_raw(raw: <<Self as Modifier>::Target as StatMarker>::Raw) -> Self;
