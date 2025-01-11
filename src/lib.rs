@@ -6,6 +6,9 @@ pub mod send;
 pub mod stat;
 
 pub mod prelude {
+    pub use crate::stat::StatMarker;
+    pub use crate::modifier::Modifier;
+    
     pub use crate::modifier::standard::Additive;
     pub use crate::modifier::standard::Flat;
     pub use crate::modifier::standard::Multiplicative;
