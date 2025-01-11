@@ -21,7 +21,7 @@ where
 {
     pub fn new(
         base: Marker::Raw,
-        f: Box<dyn Fn(Marker::Raw, &SmallVec<[M1; N]>) -> Marker::Raw>,
+        f: Box<dyn Fn(Marker::Raw, &SmallVec<[M1; N]>) -> Marker::Raw + Send>,
     ) -> Self {
         Self(Mutex::new(Stat1::new(base, f)))
     }
@@ -61,7 +61,7 @@ where
 {
     pub fn new(
         base: Marker::Raw,
-        f: Box<dyn Fn(Marker::Raw, &SmallVec<[M1; N]>, &SmallVec<[M2; N]>) -> Marker::Raw>,
+        f: Box<dyn Fn(Marker::Raw, &SmallVec<[M1; N]>, &SmallVec<[M2; N]>) -> Marker::Raw + Send>,
     ) -> Self {
         Self(Mutex::new(Stat2::new(base, f)))
     }
@@ -121,7 +121,7 @@ where
                 &SmallVec<[M1; N]>,
                 &SmallVec<[M2; N]>,
                 &SmallVec<[M3; N]>,
-            ) -> Marker::Raw,
+            ) -> Marker::Raw + Send,
         >,
     ) -> Self {
         Self(Mutex::new(Stat3::new(base, f)))
@@ -199,7 +199,7 @@ where
                 &SmallVec<[M2; N]>,
                 &SmallVec<[M3; N]>,
                 &SmallVec<[M4; N]>,
-            ) -> Marker::Raw,
+            ) -> Marker::Raw + Send,
         >,
     ) -> Self {
         Self(Mutex::new(Stat4::new(base, f)))
@@ -292,7 +292,7 @@ where
                 &SmallVec<[M3; N]>,
                 &SmallVec<[M4; N]>,
                 &SmallVec<[M5; N]>,
-            ) -> Marker::Raw,
+            ) -> Marker::Raw + Send,
         >,
     ) -> Self {
         Self(Mutex::new(Stat5::new(base, f)))
@@ -400,7 +400,7 @@ where
                 &SmallVec<[M4; N]>,
                 &SmallVec<[M5; N]>,
                 &SmallVec<[M6; N]>,
-            ) -> Marker::Raw,
+            ) -> Marker::Raw + Send,
         >,
     ) -> Self {
         Self(Mutex::new(Stat6::new(base, f)))
@@ -524,7 +524,7 @@ where
                 &SmallVec<[M5; N]>,
                 &SmallVec<[M6; N]>,
                 &SmallVec<[M7; N]>,
-            ) -> Marker::Raw,
+            ) -> Marker::Raw + Send,
         >,
     ) -> Self {
         Self(Mutex::new(Stat7::new(base, f)))
@@ -663,7 +663,7 @@ where
                 &SmallVec<[M6; N]>,
                 &SmallVec<[M7; N]>,
                 &SmallVec<[M8; N]>,
-            ) -> Marker::Raw,
+            ) -> Marker::Raw + Send,
         >,
     ) -> Self {
         Self(Mutex::new(Stat8::new(base, f)))

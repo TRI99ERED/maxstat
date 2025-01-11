@@ -19,7 +19,7 @@ where
 {
     base: Marker::Raw,
     m1: SmallVec<[M1; N]>,
-    f: Box<dyn Fn(Marker::Raw, &SmallVec<[M1; N]>) -> Marker::Raw>,
+    f: Box<dyn Fn(Marker::Raw, &SmallVec<[M1; N]>) -> Marker::Raw + Send>,
     _p: PhantomData<Marker>,
 }
 
@@ -30,7 +30,7 @@ where
 {
     pub fn new(
         base: Marker::Raw,
-        f: Box<dyn Fn(Marker::Raw, &SmallVec<[M1; N]>) -> Marker::Raw>,
+        f: Box<dyn Fn(Marker::Raw, &SmallVec<[M1; N]>) -> Marker::Raw + Send>,
     ) -> Self {
         Self {
             base,
@@ -76,7 +76,7 @@ where
     base: Marker::Raw,
     m1: SmallVec<[M1; N]>,
     m2: SmallVec<[M2; N]>,
-    f: Box<dyn Fn(Marker::Raw, &SmallVec<[M1; N]>, &SmallVec<[M2; N]>) -> Marker::Raw>,
+    f: Box<dyn Fn(Marker::Raw, &SmallVec<[M1; N]>, &SmallVec<[M2; N]>) -> Marker::Raw + Send>,
     _p: PhantomData<Marker>,
 }
 
@@ -88,7 +88,7 @@ where
 {
     pub fn new(
         base: Marker::Raw,
-        f: Box<dyn Fn(Marker::Raw, &SmallVec<[M1; N]>, &SmallVec<[M2; N]>) -> Marker::Raw>,
+        f: Box<dyn Fn(Marker::Raw, &SmallVec<[M1; N]>, &SmallVec<[M2; N]>) -> Marker::Raw + Send>,
     ) -> Self {
         Self {
             base,
@@ -157,11 +157,12 @@ where
     m3: SmallVec<[M3; N]>,
     f: Box<
         dyn Fn(
-            Marker::Raw,
-            &SmallVec<[M1; N]>,
-            &SmallVec<[M2; N]>,
-            &SmallVec<[M3; N]>,
-        ) -> Marker::Raw,
+                Marker::Raw,
+                &SmallVec<[M1; N]>,
+                &SmallVec<[M2; N]>,
+                &SmallVec<[M3; N]>,
+            ) -> Marker::Raw
+            + Send,
     >,
     _p: PhantomData<Marker>,
 }
@@ -177,11 +178,12 @@ where
         base: Marker::Raw,
         f: Box<
             dyn Fn(
-                Marker::Raw,
-                &SmallVec<[M1; N]>,
-                &SmallVec<[M2; N]>,
-                &SmallVec<[M3; N]>,
-            ) -> Marker::Raw,
+                    Marker::Raw,
+                    &SmallVec<[M1; N]>,
+                    &SmallVec<[M2; N]>,
+                    &SmallVec<[M3; N]>,
+                ) -> Marker::Raw
+                + Send,
         >,
     ) -> Self {
         Self {
@@ -277,7 +279,7 @@ where
             &SmallVec<[M2; N]>,
             &SmallVec<[M3; N]>,
             &SmallVec<[M4; N]>,
-        ) -> Marker::Raw,
+        ) -> Marker::Raw + Send,
     >,
     _p: PhantomData<Marker>,
 }
@@ -299,7 +301,7 @@ where
                 &SmallVec<[M2; N]>,
                 &SmallVec<[M3; N]>,
                 &SmallVec<[M4; N]>,
-            ) -> Marker::Raw,
+            ) -> Marker::Raw + Send,
         >,
     ) -> Self {
         Self {
@@ -417,7 +419,7 @@ where
             &SmallVec<[M3; N]>,
             &SmallVec<[M4; N]>,
             &SmallVec<[M5; N]>,
-        ) -> Marker::Raw,
+        ) -> Marker::Raw + Send,
     >,
     _p: PhantomData<Marker>,
 }
@@ -441,7 +443,7 @@ where
                 &SmallVec<[M3; N]>,
                 &SmallVec<[M4; N]>,
                 &SmallVec<[M5; N]>,
-            ) -> Marker::Raw,
+            ) -> Marker::Raw + Send,
         >,
     ) -> Self {
         Self {
@@ -581,7 +583,7 @@ where
             &SmallVec<[M4; N]>,
             &SmallVec<[M5; N]>,
             &SmallVec<[M6; N]>,
-        ) -> Marker::Raw,
+        ) -> Marker::Raw + Send,
     >,
     _p: PhantomData<Marker>,
 }
@@ -607,7 +609,7 @@ where
                 &SmallVec<[M4; N]>,
                 &SmallVec<[M5; N]>,
                 &SmallVec<[M6; N]>,
-            ) -> Marker::Raw,
+            ) -> Marker::Raw + Send,
         >,
     ) -> Self {
         Self {
@@ -771,7 +773,7 @@ where
             &SmallVec<[M5; N]>,
             &SmallVec<[M6; N]>,
             &SmallVec<[M7; N]>,
-        ) -> Marker::Raw,
+        ) -> Marker::Raw + Send,
     >,
     _p: PhantomData<Marker>,
 }
@@ -800,7 +802,7 @@ where
                 &SmallVec<[M5; N]>,
                 &SmallVec<[M6; N]>,
                 &SmallVec<[M7; N]>,
-            ) -> Marker::Raw,
+            ) -> Marker::Raw + Send,
         >,
     ) -> Self {
         Self {
@@ -986,7 +988,7 @@ where
             &SmallVec<[M6; N]>,
             &SmallVec<[M7; N]>,
             &SmallVec<[M8; N]>,
-        ) -> Marker::Raw,
+        ) -> Marker::Raw + Send,
     >,
     _p: PhantomData<Marker>,
 }
@@ -1017,7 +1019,7 @@ where
                 &SmallVec<[M6; N]>,
                 &SmallVec<[M7; N]>,
                 &SmallVec<[M8; N]>,
-            ) -> Marker::Raw,
+            ) -> Marker::Raw + Send,
         >,
     ) -> Self {
         Self {
